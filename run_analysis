@@ -1,0 +1,83 @@
+setwd("UCI HAR Dataset")
+
+if(file.exists("test")){
+setwd("test")
+}
+#load test data
+subject_test<-read.table("subject_test.txt")
+x_test<-read.table("X_test.txt")
+y_test<-read.table("y_test.txt")
+
+
+setwd("C:/Users/areddy/Documents/UCI HAR Dataset")
+
+if(file.exists("train")){
+setwd("train")
+}
+
+#load train data
+subject_testt<-read.table("subject_test.txt")
+
+x_train<-read.table("X_train.txt")
+
+y_train<-read.table("y_train.txt")
+
+#combine data
+subject_test<-rbind(subject_test,subject_testt)
+
+x_merged<-rbind(x_test,x_train)
+y_merged<-rbind(y_test,y_train)
+
+
+#choosing required columns from features
+requ<-grep("mean",features$V2,ignore.case=TRUE) 
+rqu2<-grep("std",features$V2,ignore.case=TRUE) 
+
+req=c(requ,rqu2)
+paste0("V",req)
+
+selecting required columns from data
+reqx<-x_merged[,c(paste0("V",req))]
+
+
+#activity names
+ act<-strsplit(y_merged,", ")
+
+#adding activity names to data
+x_withact<-(cbind(act[[1]],reqx))
+
+#adding subject names to data
+ finalx<-cbind(subject_test,x_withact)
+
+
+#changing variable names
+names(finalx)<-c("subject_no","activity","tBodyAcc-mean()-X","tBodyAcc-mean()-Y","tBodyAcc-mean()-Z","tGravityAcc-mean()-X","tGravityAcc-mean()-Y","tGravityAcc-mean()-Z","tBodyAccJerk-mean()-X","tBodyAccJerk-mean()-Y","tBodyAccJerk-mean()-Z","tBodyGyro-mean()-X","tBodyGyro-mean()-Y","tBodyGyro-mean()-Z","tBodyGyroJerk-mean()-X","tBodyGyroJerk-mean()-Y","tBodyGyroJerk-mean()-Z","tBodyAccMag-mean()","tGravityAccMag-mean()","tBodyAccJerkMag-mean()","tBodyGyroMag-mean()","tBodyGyroJerkMag-mean()","fBodyAcc-mean()-X","fBodyAcc-mean()-Y","fBodyAcc-mean()-Z","fBodyAcc-meanFreq()-X","fBodyAcc-meanFreq()-Y","fBodyAcc-meanFreq()-Z","fBodyAccJerk-mean()-X","fBodyAccJerk-mean()-Y","fBodyAccJerk-mean()-Z","fBodyAccJerk-meanFreq()-X","fBodyAccJerk-meanFreq()-Y","fBodyAccJerk-meanFreq()-Z","fBodyGyro-mean()-X","fBodyGyro-mean()-Y","fBodyGyro-mean()-Z","fBodyGyro-meanFreq()-X","fBodyGyro-meanFreq()-Y","fBodyGyro-meanFreq()-Z","fBodyAccMag-mean()","fBodyAccMag-meanFreq()","fBodyBodyAccJerkMag-mean()","fBodyBodyAccJerkMag-meanFreq()","fBodyBodyGyroMag-mean()","fBodyBodyGyroMag-meanFreq()","fBodyBodyGyroJerkMag-mean()","fBodyBodyGyroJerkMag-meanFreq()","angle(tBodyAccMean,gravity)","angle(tBodyAccJerkMean),gravityMean)","angle(tBodyGyroMean,gravityMean)","angle(tBodyGyroJerkMean,gravityMean)","angle(X,gravityMean)","angle(Y,gravityMean)","angle(Z,gravityMean)","tBodyAcc-std()-X","tBodyAcc-std()-Y","tBodyAcc-std()-Z","tGravityAcc-std()-X","tGravityAcc-std()-Y","tGravityAcc-std()-Z","tBodyAccJerk-std()-X","tBodyAccJerk-std()-Y","tBodyAccJerk-std()-Z","tBodyGyro-std()-X","tBodyGyro-std()-Y","tBodyGyro-std()-Z","tBodyGyroJerk-std()-X","tBodyGyroJerk-std()-Y","tBodyGyroJerk-std()-Z","tBodyAccMag-std()","tGravityAccMag-std()","tBodyAccJerkMag-std()","tBodyGyroMag-std()","tBodyGyroJerkMag-std()","fBodyAcc-std()-X","fBodyAcc-std()-Y","fBodyAcc-std()-Z","fBodyAccJerk-std()-X","fBodyAccJerk-std()-Y","fBodyAccJerk-std()-Z","fBodyGyro-std()-X","fBodyGyro-std()-Y","fBodyGyro-std()-Z","fBodyAccMag-std()","fBodyBodyAccJerkMag-std()","fBodyBodyGyroMag-std()","fBodyBodyGyroJerkMag-std()")
+
+levels(finalx$activity)<-c("LAYING","SITTING","STANDING","WALKING","WALKING_DOWNSTAIRS","WALKING_UPSTAIRS","LAYING","SITTING","STANDING","WALKING","WALKING_DOWNSTAIRS","WALKING_UPSTAIRS","WALKING_UPSTAIRS")
+
+
+#aggregating for means
+tidyx <-aggregate(finalx, by=list(finalx$subject_no,finalx$activity),mean,na.rm=TRUE) 
+
+#correcting names
+tidyx<-tidyx[,-c(3,4)]
+
+names(tidyx)[1]<-"subject"
+names(tidyx)[2]<-"activity"
+
+tidyx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
